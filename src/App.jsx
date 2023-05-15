@@ -1,43 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from "react";
+import styles from "./App.module.css";
+import { Link } from "react-router-dom";
 
-function CardPage() {
-  const [cardData, setCardData] = useState([]);
+function App() {
+  const [cards, setCards] = useState([]);
+  
+  function sortByPrice(cards){
+    return cards.sort((a, b) => b.card_prices[0].cardmarket_price - a.card_prices[0].cardmarket_price);
+  }
 
-  useEffect(() => {
-    async function fetchCardData() {
-      const response = await fetch('https://db.ygoprodeck.com/api/v7/cardinfo.php?id=6983839');
+  function sortAlphabetically(cards) {
+    return cards.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  
+  const App = () => {
+ // Dans la fonction App
+<Route path="/card/:id" component={CardDetails} />
+
+  };
+  // fetch cards data
+  const fetchCards = async () => {
+    try {
+      const response = await fetch("https://db.ygoprodeck.com/api/v7/cardinfo.php");
       const data = await response.json();
-      setCardData(data.data[0]);
+      setCards(data.data);
+    } catch (error) {
+      console.log(error);
     }
-    fetchCardData();
-  }, []);
+  };
+
+  // render card component
+  const Card = ({ card }) => {
+    const [showCard, setShowCard] = useState(false);
+
+    return (
+      <div className={styles.card} onClick={() => setShowCard(!showCard)}>
+        <h2 className="card-name">{card.name}</h2>
+        <div className={styles.card_content}>          
+          <div className={styles.card_att}>
+            <img  src={card.card_images[0].image_url_small} alt={card.name} />
+          </div>
+          {showCard && (
+            <div className={styles.card_att}>
+              <p>
+              <div className={styles.card_attribute}>{card.desc}</div>
+              <div className={styles.card_attribute}>{`Type: ${card.type}`}</div>
+              <div className={styles.card_attribute}>{`Race: ${card.race}`}</div>
+              <div className={styles.card_attribute}>{`Prix: ${card.card_prices[0].cardmarket_price}`}</div>
+              </p>            
+            </div>
+          )}
+           <Link to={`/card/${card.id}`}>
+            <button className={styles.card_btn}>Voir plus</button>
+          </Link>
+        </div>
+      </div>
+    );
+  };
+
+  // render all cards
+  const renderCards = () => {
+    return cards.map((card) => <Card key={card.id} card={card} />);
+  };
 
   return (
-    <div>
-      <h1>{cardData.name}</h1>
-      <p>Type: {cardData.type}</p>
-      <p>Frame Type: {cardData.frameType}</p>
-      <p>Desc: {cardData.desc}</p>
-      <p>ATK: {cardData.atk}</p>
-      <p>DEF: {cardData.def}</p>
-      <p>Level: {cardData.level}</p>
-      <p>Race: {cardData.race}</p>
-      <p>Attribute: {cardData.attribute}</p>
-      <h2>Card Sets:</h2>
-      <ul>
-        {cardData.card_sets && cardData.card_sets.map((set, index) => (
-          <li key={index}>
-            <p>Set Name: {set.set_name}</p>
-            <p>Set Code: {set.set_code}</p>
-            <p>Set Rarity: {set.set_rarity}</p>
-            <p>Set Price: {set.set_price}</p>
-          </li>
-        ))}
-      </ul>
-      <h2>Card Images:</h2>
-      <img src={cardData.card_images && cardData.card_images[0].image_url} alt={cardData.name} />
+    <div className="App">
+      <h1>Yugioh Cards</h1>
+      <button onClick={fetchCards}>Load Cards</button>
+      <button onClick={sortByPrice(cards)}>Sort by price</button>
+      {/* <button onClick={sortAlphabetically(cards)}>Sort by name</button> */}
+      <div className="card-container">{renderCards()}</div>
     </div>
   );
 }
 
-export default CardPage;
+export default App;

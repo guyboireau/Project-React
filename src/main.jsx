@@ -1,10 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import CardPage from './App.jsx'
 import './index.css'
+import App from './App'
+import Header from './Header'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <CardPage />
+    <Header></Header>
+    <App />
   </React.StrictMode>,
 )
