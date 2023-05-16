@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 function App() {
   const [cards, setCards] = useState([]);
   
-  function sortByPrice(cards){
-    return cards.sort((a, b) => b.card_prices[0].cardmarket_price - a.card_prices[0].cardmarket_price);
+function sortByPrice(cards){
+  return cards.sort((a, b) => b.card_prices[0].cardmarket_price - a.card_prices[0].cardmarket_price);
   }
 
-  function sortAlphabetically(cards) {
-    return cards.sort((a, b) => a.name.localeCompare(b.name));
+function sortAlphabetically(cards) {
+  return cards.sort((a, b) => a.name.localeCompare(b.name));
   }
   
   const App = () => {
